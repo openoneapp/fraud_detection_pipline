@@ -1,36 +1,36 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+aibank/node_modules/
+aibank/.pnp
+aibank/.pnp.js
 
 # testing
-/coverage
+aibank/coverage/
 
 # next.js
-/.next/
-/out/
+aibank/.next/
+aibank/out/
 
 # production
-/build
+aibank/build/
 
 # misc
 .DS_Store
 *.pem
 
 # debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+aibank/npm-debug.log*
+aibank/yarn-debug.log*
+aibank/yarn-error.log*
 
 # local env files
-.env*.local
-.env
+aibank/.env*.local
+aibank/.env
 
 # vercel
-.vercel
+aibank/.vercel/
 
 # typescript
-*.tsbuildinfo
-next-env.d.ts
+aibank/*.tsbuildinfo
+aibank/next-env.d.ts
