@@ -34,3 +34,9 @@ aibank/.vercel/
 # typescript
 aibank/*.tsbuildinfo
 aibank/next-env.d.ts
+
+# kafka folder
+kafka/
+
+# postgres folder
+postgres/
