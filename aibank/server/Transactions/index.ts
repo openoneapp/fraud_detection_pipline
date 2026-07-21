@@ -3,10 +3,22 @@
 import prisma from "@/lib/prisma";
 import { getBankAccounts } from "../BankAccounts";
 import { createTransferProps } from "./schema";
+import { revalidatePath } from "next/cache";
 
-export async function getTransactionData() {
+export type TransactionQueryInput = {
+  page?: number;
+  limit?: number;
+};
+
+export async function getTransactionData({
+  page = 1,
+  limit = 10,
+}: TransactionQueryInput = {}) {
   const resAcc = await getBankAccounts();
   const accountIds = resAcc.data?.map((acc) => acc.id) ?? [];
+  const safePage = Math.max(1, page);
+  const safeLimit = Math.max(1, Math.min(limit, 5));
+  const skip = (safePage - 1) * safeLimit;
 
   try {
     const [rawTransactions, totalCount] = await Promise.all([
@@ -17,7 +29,7 @@ export async function getTransactionData() {
             { receiverAccountId: { in: accountIds } },
           ],
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: "desc" }, // Uncommented to sort newest first
         include: {
           senderAccount: {
             select: {
@@ -34,7 +46,8 @@ export async function getTransactionData() {
             },
           },
         },
-        take: 100, // Limit for performance dashboard
+        skip,
+        take: safeLimit,
       }),
       prisma.transaction.count({
         where: {
@@ -67,6 +80,7 @@ export async function getTransactionData() {
     const totalVolume = rawTransactions
       .reduce((sum, tx) => sum + Number(tx.amount), 0)
       .toString();
+    const totalPages = Math.ceil(totalCount / safeLimit) || 1;
 
     return {
       message: "Fetch transactions success.",
@@ -74,6 +88,11 @@ export async function getTransactionData() {
         transactions: transactions,
         totalCount: totalCount,
         totalVolume: totalVolume,
+        page: safePage,
+        pageSize: safeLimit,
+        totalPages,
+        hasNextPage: safePage < totalPages,
+        hasPrevPage: safePage > 1,
       },
     };
   } catch (error) {
@@ -181,6 +200,8 @@ export async function createTransfer({
           }
         : null,
     };
+
+    revalidatePath("/transactions");
 
     return {
       status: true,

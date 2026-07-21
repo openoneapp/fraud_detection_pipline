@@ -6,13 +6,28 @@ import { Suspense } from "react";
 import { TransactionTable } from "@/components/transactions/TransactionTable";
 import { TransferActionTrigger } from "@/components/transactions/TransferActionTrigger";
 
-export default async function TransactionsDashboard() {
-  const { data } = await getTransactionData();
+type TransactionsPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function TransactionsDashboard({
+  searchParams,
+}: TransactionsPageProps) {
+  const resolvedSearchParams = searchParams
+    ? await Promise.resolve(searchParams)
+    : {};
+  const rawPage = resolvedSearchParams.page;
+  const currentPage = Number(Array.isArray(rawPage) ? rawPage[0] : rawPage) || 1;
+
+  const { data } = await getTransactionData({ page: currentPage, limit: 10 });
   const resAccounts = await getBankAccountsTransfer();
 
   const transactions = data?.transactions ?? [];
   const totalCount = data?.totalCount ?? 0;
   const totalVolume = data?.totalVolume ?? 0;
+  const totalPages = data?.totalPages ?? 1;
+  const hasPrevPage = data?.hasPrevPage ?? false;
+  const hasNextPage = data?.hasNextPage ?? false;
 
   const accounts = resAccounts?.data ?? { source: [], destination: [] };
 
@@ -85,7 +100,14 @@ export default async function TransactionsDashboard() {
       {/* Main Interactive Table Layout */}
       <div className="hidden h-full flex-1 flex-col space-y-8 md:flex">
         <Suspense>
-          <TransactionTable data={transactions} ownAccounts={accounts.source} />
+          <TransactionTable
+            data={transactions}
+            ownAccounts={accounts.source}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            hasPrevPage={hasPrevPage}
+            hasNextPage={hasNextPage}
+          />
         </Suspense>
       </div>
     </div>

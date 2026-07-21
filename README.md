@@ -53,6 +53,25 @@ cd AI-FINAL-PROJECT
 # Compile, build, and lift all services in detached mode
 docker compose --build -d
 ```
+```bash
+# To check the seeding logs
+docker logs ai-bank-app
+```
+```bash
+# Wait untill the seeding finish
+Seeding register sign-on satrotana@gmail.com, completed! ✅
+Seeding register sign-on povsokny@gmail.com, completed! ✅
+.......
+Seeded 985000/1000000 transactions...
+Seeded 990000/1000000 transactions...
+Seeded 995000/1000000 transactions...
+Seeded 1000000/1000000 transactions...
+Transaction seeding complete. Created 1000000 transactions.
+▲ Next.js 16.2.10
+- Local:         http://localhost:3000
+- Network:       http://localhost:3000
+✓ Ready in 0ms
+```
 
 > ⏳ *Note: Please wait a few moments for all database, messaging brokers, and applications to successfully initialize and enter a healthy state.*
 
@@ -126,7 +145,11 @@ To ensure that your log event streaming is operating flawlessly without bottlene
 
 ```http
 GET http://localhost:8083/connectors/aibank-transactions/config
-```
-```http
 GET http://localhost:8083/connectors/aibank-bank_accounts/config
+```
+### Phase 4: Verify Streaming kafka
+To ensure that your log event streaming is consumming with kafka topic which was created dynamicly from debezium connection
+
+```http
+http://localhost:8080/ui/clusters/local/all-topics
 ```

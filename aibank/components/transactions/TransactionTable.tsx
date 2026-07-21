@@ -1,14 +1,14 @@
 // app/dashboard/transactions/components/transaction-table.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -25,11 +25,22 @@ import { BankAccount } from "@/server/BankAccounts/schema";
 interface TransactionTableProps {
   data: TransactionWithAccounts[];
   ownAccounts: BankAccount[];
+  currentPage: number;
+  totalPages: number;
+  hasPrevPage: boolean;
+  hasNextPage: boolean;
 }
 
-export function TransactionTable({ data, ownAccounts }: TransactionTableProps) {
-  const [mounted, setMounted] = useState(false);
+export function TransactionTable({
+  data,
+  ownAccounts,
+  currentPage,
+  totalPages,
+  hasPrevPage,
+  hasNextPage,
+}: TransactionTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
+  const router = useRouter();
   const ownAccountIds = useMemo(
     () => ownAccounts.map((acc) => acc.id),
     [ownAccounts],
@@ -44,24 +55,15 @@ export function TransactionTable({ data, ownAccounts }: TransactionTableProps) {
     meta: {
       ownAccountIds,
     },
+    manualSorting: true,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
   });
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div>Loading...</div>;
-  }
+  const handlePageChange = (page: number) => {
+    router.push(`/transactions?page=${page}`);
+  };
 
   return (
     <div className="space-y-4">
@@ -119,23 +121,28 @@ export function TransactionTable({ data, ownAccounts }: TransactionTableProps) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="text-sm text-muted-foreground">
+          Page {currentPage} of {totalPages}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={!hasPrevPage}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={!hasNextPage}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

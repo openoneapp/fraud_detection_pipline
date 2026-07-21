@@ -58,7 +58,7 @@ export function TransferActionTrigger({
       receiverAccountId: values.toAccountId,
     };
     const trans = await createTransfer({ value });
-    if (trans.data) {
+    if (trans.status === true) {
       setIsOpen(false);
       route.refresh();
     }
