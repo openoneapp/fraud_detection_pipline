@@ -105,7 +105,9 @@ services:
       BETTER_AUTH_SECRET: 04a70603e27df6422e01aeccb1a2c5df865c759d20d242c86723636eb17e5fe0
       BETTER_AUTH_URL: http://localhost:3000
     depends_on:
-      - postgres-aibank
+      postgres-aibank:
+        condition: service_healthy
+    restart: on-failure
 
   flink-jobmanager:
     image: flink:1.20.1-java17
