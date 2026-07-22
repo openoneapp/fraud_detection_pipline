@@ -37,7 +37,8 @@ The orchestration ecosystem routes financial transactions from application state
 | :--- | :--- | :--- |
 | **AIBank Web UI** | [http://localhost:3000](http://localhost:3000) | Frontend application and banking simulator interface |
 | **Kafka UI** | [http://localhost:8080](http://localhost:8080) | Visualization and monitoring dashboard for Kafka Topics & Streams |
-| **Debezium Connect** | [http://localhost:8083/connectors](http://localhost:8083/connectors) | Distributed CDC engine linking relational state mutations to Kafka |
+| **Debezium Connect** | [http://localhost:8083](http://localhost:8083/connectors) | Distributed CDC engine linking relational state mutations to Kafka |
+| **Apache Flink** | [http://localhost:8081](http://localhost:8081) | Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data streams. |
 
 ---
 
