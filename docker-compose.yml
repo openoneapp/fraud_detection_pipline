@@ -27,6 +27,32 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-analysis:
+    image: postgres:16
+    container_name: postgres-analysis
+    hostname: analysis
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: analysis
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_replication_slots=10
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres/analysis:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   kafka:
     image: apache/kafka:latest
     container_name: kafka

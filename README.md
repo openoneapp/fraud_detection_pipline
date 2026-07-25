@@ -60,14 +60,17 @@ docker logs ai-bank-app
 ```
 ```bash
 # Wait untill the seeding finish
-Seeding register sign-on satrotana@gmail.com, completed! ✅
-Seeding register sign-on povsokny@gmail.com, completed! ✅
-.......
-Seeded 985000/1000000 transactions...
-Seeded 990000/1000000 transactions...
-Seeded 995000/1000000 transactions...
-Seeded 1000000/1000000 transactions...
-Transaction seeding complete. Created 1000000 transactions.
+========================================
+FINAL DATASET
+========================================
+Total: 1,000,000
+Fraud: 300,000
+Normal: 700,000
+Fraud percentage: 30.00%
+========================================
+
+Final counts are correct.
+Dataset generation completed successfully.
 ▲ Next.js 16.2.10
 - Local:         http://localhost:3000
 - Network:       http://localhost:3000
