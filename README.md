@@ -1,65 +1,180 @@
 # 🛡️ Real-Time Fraud Detection System
 
-A high-performance, real-time banking fraud detection platform built as a comprehensive final capstone project. This project integrates full-stack software development, streaming data pipelines, distributed message brokers, change data capture (CDC), and trained Artificial Intelligence models to analyze, detect, and intercept fraudulent behavior in real time.
+A high-performance, real-time banking fraud detection platform built as a comprehensive final capstone project.
+
+This project demonstrates end-to-end expertise in:
+* **Full-Stack Software Development**
+* **Real-Time Data Streaming**
+* **Distributed Message Brokers**
+* **Change Data Capture (CDC)**
+* **Apache Flink Stream Processing**
+* **Machine Learning and Artificial Intelligence**
+* **Data Analysis** (Excel, Power BI, SQL, Python, and R)
+
+The system analyzes banking transactions in real time and detects suspicious behavior using both rule-based fraud detection and trained AI/ML models.
 
 ---
 
+<img src="AI_Detection_Fraud_Flow.drawio.svg" alt="Architecture Diagram" style="width: 500px;" />
+
 ## 📊 Analytics & AI Core
-This project demonstrates complete end-to-end expertise in data analysis (**Excel, Power BI, SQL, Python, R**) and **Machine Learning / AI Training**. The intelligent detection engine is engineered and trained against **six (6) critical, real-world banking fraud vectors**:
+
+The intelligent fraud detection engine is trained and evaluated against six critical real-world banking fraud scenarios.
 
 ### 🧠 Trained Fraud Scenarios
 
-1. **Immediate Large Transfer After Account Creation**
-   * *The Pattern:* Normal users typically test new accounts with small sums or let them sit idle. Depositing or moving massive amounts immediately after registration is a textbook indicator of a **Money Mule Account** (set up specifically to launder or siphon stolen funds before discovery).
+#### 1. Immediate Large Transfer After Account Creation
+* **Pattern:** Normal users typically begin with small transactions or leave a newly created account inactive for some time. A massive transfer shortly after account creation can indicate a *Money Mule Account* — an account created or compromised specifically to receive and rapidly move stolen funds before the activity is detected.
+* **Detection signals include:**
+  * Very young account age
+  * Extremely large transaction amount
+  * Transaction occurring shortly after account creation
+  * Abnormal transaction behavior compared to normal users
 
-2. **Many-to-One Consolidation (Layering/Structuring)**
-   * *The Pattern:* Multiple compromised or mule accounts routing rapid streams of small-to-medium transfers into a single centralized "hub" account. This is a classic signature of layering before a physical or external cash-out.
+#### 2. Many-to-One Consolidation
+* **Pattern:** Multiple accounts rapidly send money to a single receiving account. This pattern can indicate money laundering, layering, structuring, or coordinated mule-account activity. The receiving account acts as a central hub account, consolidating funds from many different senders before the money is withdrawn or transferred elsewhere.
+* **Detection signals include:**
+  * High number of unique senders
+  * Many transactions to the same receiver
+  * Rapid transaction activity
+  * Increasing transaction volume over a short period
 
-3. **Multiple Same-Amount Transactions**
-   * *The Pattern:* Real human transaction frequencies and values vary significantly. Seeing identical amounts transferred consecutively in a tight window indicates automated **Bot Activity**, **Card-Testing Fraud**, or structural attempts to bypass single-transaction threshold reporting.
+#### 3. Multiple Same-Amount Transactions
+* **Pattern:** Repeated transactions with exactly the same amount within a short time window. Real-world human transaction behavior usually varies in both timing and amount. Repeated identical transactions can indicate automated bot activity, card testing, scripted attacks, or attempts to avoid transaction monitoring thresholds.
+* **Detection signals include:**
+  * Multiple identical transaction amounts
+  * High frequency within a short time window
+  * Repeated transactions involving the same account
+  * Unusual patterns compared to the account's historical behavior
 
-4. **Velocity Spikes (Rapid-Fire Attacks)**
-   * *The Pattern:* A massive cluster of transactions executed in an ultra-short timeframe. Because attackers expect stolen cards or compromised credentials to be frozen quickly, they execute a high-frequency **Velocity Attack** to completely drain or disperse funds within minutes.
+#### 4. Velocity Spikes
+* **Pattern:** A large number of transactions are executed within an extremely short period. Attackers often attempt to move or disperse funds quickly before stolen credentials, cards, or accounts are frozen. This can be associated with account takeover, automated attacks, card fraud, rapid fund draining, or credential compromise.
+* **Detection signals include:**
+  * High transaction count within a short period
+  * Large transaction volume within a short period
+  * Sudden deviation from normal account behavior
 
-5. **Drastic Geolocation / Address Changes**
-   * *The Pattern:* A transaction originates from a physical IP address or location in **Cambodia**, followed 10 minutes later by a transaction from an IP or bank branch in **Europe**. Because physical travel is impossible, this flags an immediate **Account Takeover (ATO)** or proxy/VPN spoofing.
+#### 5. Drastic Geolocation Changes
+* **Pattern:** A transaction occurs from one geographical location, followed shortly afterward by another transaction from a location that would be physically impossible to reach within the available time (e.g., a transaction in Cambodia, followed 10 minutes later by another from Europe). This may indicate Account Takeover (ATO), stolen credentials, proxy/VPN usage, compromised devices, or impossible-travel activity.
+* **Detection signals include:**
+  * Large geographic distance between transactions
+  * Very short time difference
+  * High calculated travel speed
+  * Sudden IP or location changes
 
-6. **The "Sleep and Wake" Pattern**
-   * *The Pattern:* An account remains completely dormant or inactive for months, suddenly "wakes up" to handle a massive volume of high-value transactions within a 48-hour window, and immediately goes dark again.
+#### 6. Sleep-and-Wake Pattern
+* **Pattern:** An account remains inactive for a long period and then suddenly becomes highly active.
+  ```text
+  Long period of inactivity
+          ↓
+  Account suddenly becomes active
+          ↓
+  Multiple high-value transactions
+          ↓
+  Activity stops again
+
+```
+
+This behavior can indicate dormant account takeover, reactivated mule accounts, coordinated fraud campaigns, or accounts being used only during specific laundering operations.
+
+* **Detection signals include:**
+* Long period since the previous transaction
+* Sudden increase in transaction volume
+* Multiple high-value transactions
+* Burst activity within a short period
+* Return to inactivity after the burst
+
+
 
 ---
 
-## 🚀 Architecture & Infrastructure Components
+## 🚀 System Architecture
 
-The orchestration ecosystem routes financial transactions from application states to the streaming analytics framework instantly:
+The platform processes banking transactions through a real-time streaming pipeline:
 
-| Service Component | Internal Routing URL | Purpose |
-| :--- | :--- | :--- |
-| **AIBank Web UI** | [http://localhost:3000](http://localhost:3000) | Frontend application and banking simulator interface |
-| **Kafka UI** | [http://localhost:8080](http://localhost:8080) | Visualization and monitoring dashboard for Kafka Topics & Streams |
-| **Debezium Connect** | [http://localhost:8083](http://localhost:8083/connectors) | Distributed CDC engine linking relational state mutations to Kafka |
-| **Apache Flink** | [http://localhost:8081](http://localhost:8081) | Apache Flink is a framework and distributed processing engine for stateful computations over unbounded and bounded data streams. |
+```text
+┌─────────────────┐
+│   AIBank Web UI │
+│   Next.js       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   PostgreSQL    │
+│   AIBank DB     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│    Debezium     │
+│    CDC Engine   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│      Kafka      │
+│  Event Streaming│
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   Apache Flink  │
+│ Fraud Detection │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Fraud Alerts   │
+│  & AI Analysis  │
+└─────────────────┘
+
+```
 
 ---
 
-## 🛠️ Step-by-Step Deployment Guide
+## 🛠️ Infrastructure Components
 
-### Phase 1: Initialize the Multi-Container Cluster
-Ensure you are at the project root directory before executing setup commands.
+| Service | URL | Purpose |
+| --- | --- | --- |
+| **AIBank Web UI** | `http://localhost:3000` | Banking simulator and frontend application |
+| **Kafka UI** | `http://localhost:8080` | Monitor Kafka clusters, topics, messages, and consumer activity |
+| **Debezium Connect** | `http://localhost:8083` | Capture PostgreSQL changes and publish them to Kafka |
+| **Apache Flink** | `http://localhost:8081` | Stateful real-time stream processing and fraud detection |
 
+---
+
+## 🚀 Step-by-Step Deployment Guide
+
+### Phase 1: Start the Multi-Container Cluster
+
+1. Make sure you are inside the project root directory:
 ```bash
-# Navigate to the project root directory
 cd AI-FINAL-PROJECT
 
-# Compile, build, and lift all services in detached mode
-docker compose --build -d
 ```
+
+
+2. Build the Docker images and start all services in detached mode:
 ```bash
-# To check the seeding logs
-docker logs ai-bank-app
+docker compose up --build -d
+
 ```
+
+
+> **Note:** The correct Docker Compose command is `docker compose up --build -d`.
+
+
+3. Monitor the AIBank Application Logs:
+To monitor the dataset generation and application startup process:
 ```bash
-# Wait untill the seeding finish
+docker logs -f ai-bank-app
+
+```
+
+
+4. Wait until dataset generation is completed successfully.
+**Expected output:**
+```text
 ========================================
 FINAL DATASET
 ========================================
@@ -71,24 +186,43 @@ Fraud percentage: 30.00%
 
 Final counts are correct.
 Dataset generation completed successfully.
+
 ▲ Next.js 16.2.10
 - Local:         http://localhost:3000
 - Network:       http://localhost:3000
+
 ✓ Ready in 0ms
+
 ```
 
-> ⏳ *Note: Please wait a few moments for all database, messaging brokers, and applications to successfully initialize and enter a healthy state.*
 
-### Phase 2: Establish the Change Data Capture (CDC) Pipeline
-Once the cluster is online, you must provision a Debezium connector to stream ledger state changes out of the PostgreSQL database (`public.transactions,public.bank_account`) directly into Apache Kafka.
+> ⏳ **Important:** The initial dataset generation may take some time. Wait until the application has finished generating the dataset and the required infrastructure services have successfully started.
 
-Execute the following **`POST`** request using your preferred API Client (cURL, Postman, or Thunder Client):
 
-* **HTTP Method:** `POST`
-* **Target Endpoint:** `http://localhost:8083/connectors`
+
+---
+
+### Phase 2: Establish the Change Data Capture Pipeline
+
+Once the infrastructure is running, configure Debezium to capture changes from the PostgreSQL database.
+
+**The CDC pipeline:**
+
+
+$$\text{PostgreSQL} \longrightarrow \text{Debezium} \longrightarrow \text{Kafka} \longrightarrow \text{Apache Flink}$$
+
+The following connectors capture changes from:
+
+* `public.transactions`
+* `public.bank_accounts`
+
+You can create the connectors using cURL, Postman, Thunder Client, or any HTTP client.
+
+#### 2.1 Create the Transactions Connector
+
+* **Request:** `POST http://localhost:8083/connectors`
 * **Headers:** `Content-Type: application/json`
-
-#### Request Payload Body:
+* **Request Body:**
 ```json
 {
   "name": "aibank-transactions",
@@ -111,49 +245,205 @@ Execute the following **`POST`** request using your preferred API Client (cURL, 
     "transforms.unwrap.delete.handling.mode": "rewrite"
   }
 }
+
 ```
-#### Request Payload Body:
+
+
+
+#### 2.2 Create the Bank Accounts Connector
+
+* **Request:** `POST http://localhost:8083/connectors`
+* **Headers:** `Content-Type: application/json`
+* **Request Body:**
 ```json
 {
-  "name": "aibank-bank_accounts",
+  "name": "aibank-bank-accounts",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-
     "database.hostname": "aibank",
     "database.port": "5432",
     "database.user": "postgres",
     "database.password": "postgres",
     "database.dbname": "aibank",
-
     "topic.prefix": "aibank",
-
     "table.include.list": "public.bank_accounts",
-
     "plugin.name": "pgoutput",
-
     "slot.name": "aibank_bank_accounts_slot",
     "publication.name": "aibank_bank_accounts_publication",
-
     "decimal.handling.mode": "double",
-
     "transforms": "unwrap",
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
     "transforms.unwrap.add.fields": "op,table,source.ts_ms",
     "transforms.unwrap.delete.handling.mode": "rewrite"
   }
 }
+
 ```
 
-### Phase 3: Verify Streaming Status
-To ensure that your log event streaming is operating flawlessly without bottlenecks, check the health of the newly initiated connector:
 
-```http
-GET http://localhost:8083/connectors/aibank-transactions/config
-GET http://localhost:8083/connectors/aibank-bank_accounts/config
-```
-### Phase 4: Verify Streaming kafka
-To ensure that your log event streaming is consumming with kafka topic which was created dynamicly from debezium connection
 
-```http
-http://localhost:8080/ui/clusters/local/all-topics
+---
+
+### Phase 3: Verify the Debezium Connectors
+
+After creating the connectors, verify that they were registered correctly.
+
+#### Check Connector Configuration
+
+* **Transactions:** `GET http://localhost:8083/connectors/aibank-transactions/config`
+* **Bank Accounts:** `GET http://localhost:8083/connectors/aibank-bank-accounts/config`
+
+#### Check Connector Runtime Status
+
+Configuration verification confirms that the connector exists, but the status endpoint is more useful for checking whether the connector is actually running.
+
+* **Transactions:** `GET http://localhost:8083/connectors/aibank-transactions/status`
+* **Bank Accounts:** `GET http://localhost:8083/connectors/aibank-bank-accounts/status`
+
+A healthy connector should report:
+
+```json
+{
+  "connector": {
+    "state": "RUNNING"
+  },
+  "tasks": [
+    {
+      "state": "RUNNING"
+    }
+  ]
+}
+
 ```
+
+---
+
+### Phase 4: Verify Kafka Topics
+
+Debezium automatically creates Kafka topics based on the configured topic prefix. With `topic.prefix = aibank`, the generated topics will typically use the `aibank` prefix.
+
+* Open the Kafka UI: `http://localhost:8080/ui/clusters/local/all-topics`
+
+From the Kafka UI, you can inspect:
+
+* Kafka topics and partitions
+* Messages and offsets
+* Consumer groups
+* Producer and consumer activity
+
+---
+
+### Phase 5: Generate the Fraud Detection Dataset
+
+The dataset generation process creates a large, labeled dataset containing both fraudulent and normal banking transactions used for model training, feature analysis, and visualization.
+
+#### 5.1 Open the Dataset Generation Notebook
+
+Open the training directory using Visual Studio Code:
+
+```bash
+code training_models/generate_dataset.ipynb
+
+```
+
+*(Ensure Visual Studio Code and the required Python/Jupyter extensions are installed.)*
+
+#### 5.2 Generate the Dataset
+
+Run the notebook to:
+
+1. Read raw banking data from the AIBank PostgreSQL database.
+2. Generate transaction features.
+3. Apply the six fraud scenarios.
+4. Label transactions as fraudulent or normal.
+5. Insert the generated feature dataset into the analysis database.
+6. Export the final dataset as a CSV file.
+
+**Example dataset distribution:**
+
+```text
+========================================
+FINAL DATASET
+========================================
+Total: 1,000,000
+Fraud: 300,000
+Normal: 700,000
+Fraud Percentage: 30.00%
+========================================
+
+```
+
+**Dataset Flow:**
+
+```text
+Raw Transaction Data ──► Feature Engineering ──► Fraud Scenario Generation
+                                                        │
+                                                        ▼
+Machine Learning Training ◄── CSV Dataset ◄── Analysis Database ◄── Fraud/Normal Labels
+
+```
+
+---
+
+## 🧠 Machine Learning Pipeline
+
+The complete AI workflow follows this path:
+
+$$\text{Transaction Data} \longrightarrow \text{Feature Engineering} \longrightarrow \text{Fraud Scenario Labeling} \longrightarrow \text{Dataset Generation}$$
+
+$$\downarrow$$
+
+$$\text{Real-Time Detection} \longleftarrow \text{Model Export} \longleftarrow \text{Evaluation} \longleftarrow \text{Training} \longleftarrow \text{EDA} \longleftarrow \text{Data Cleaning}$$
+
+### Features Used by ML Model:
+
+* Transaction amount & account age
+* Receiver transaction count & unique sender count
+* Repeated transaction amounts
+* Sender transaction velocity & volume
+* Time since previous transaction
+* Geographic distance & estimated travel speed
+* Dormancy duration
+
+---
+
+## ⚡ Real-Time Fraud Detection Flow
+
+After dataset generation and model training, real-time transactions follow this streaming pipeline:
+
+```text
+New Banking Transaction
+          ↓
+PostgreSQL INSERT
+          ↓
+Debezium CDC Event
+          ↓
+Kafka Topic
+          ↓
+Apache Flink
+          ↓
+Feature Calculation
+          ↓
+Fraud Rules + AI Model
+          ↓
+Fraud Risk Score
+          ↓
+Fraud Alert / Action
+
+```
+
+### System Actions Upon Detection:
+
+* Generate a fraud alert
+* Assign a fraud risk score
+* Block or hold suspicious transactions
+* Notify the core banking system
+* Store detection results & update monitoring dashboard
+
+---
+
+## 🎯 Project Objective
+
+The objective of this project is to demonstrate how modern financial institutions can combine **full-stack application development**, **PostgreSQL databases**, **Change Data Capture**, **Apache Kafka**, **Apache Flink**, **Feature Engineering**, and **Machine Learning / Artificial Intelligence** with **real-time stream processing** to build an end-to-end real-time banking fraud detection platform.
+
+The final system is designed to detect suspicious transaction behavior in real time, analyze complex fraud patterns, and provide immediate fraud intelligence before potentially fraudulent activity can cause significant financial damage.
