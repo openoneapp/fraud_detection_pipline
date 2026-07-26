@@ -2216,6 +2216,51 @@ async function validateFinalCounts() {
  * ============================================================
  */
 
+async function shouldSkipSeeding() {
+  const existingTransactions =
+    await prisma.transaction.count();
+
+  const existingUsers =
+    await prisma.user.count({
+      where: {
+        email: {
+          startsWith:
+            "testuser",
+        },
+      },
+    });
+
+  const existingBankAccounts =
+    await prisma.bankAccount.count();
+
+  const isSeeded =
+    existingTransactions >=
+      TOTAL_TRANSACTIONS &&
+    existingUsers >= TOTAL_USERS &&
+    existingBankAccounts >=
+      TOTAL_USERS;
+
+  if (isSeeded) {
+    console.log(
+      `Seed data already exists (${existingTransactions.toLocaleString()} transactions, ${existingUsers.toLocaleString()} test users, ${existingBankAccounts.toLocaleString()} bank accounts). Skipping seeding.`,
+    );
+
+    return true;
+  }
+
+  if (
+    existingTransactions > 0 ||
+    existingUsers > 0 ||
+    existingBankAccounts > 0
+  ) {
+    console.log(
+      `Existing seed data detected (${existingTransactions.toLocaleString()} transactions, ${existingUsers.toLocaleString()} test users, ${existingBankAccounts.toLocaleString()} bank accounts). Continuing to populate.`,
+    );
+  }
+
+  return false;
+}
+
 async function main() {
   console.log(
     "Starting large fraud dataset generation...",
@@ -2232,6 +2277,13 @@ async function main() {
   console.log(
     `Normal transactions: ${TOTAL_NORMAL_TRANSACTIONS.toLocaleString()}`,
   );
+
+  const shouldSkip =
+    await shouldSkipSeeding();
+
+  if (shouldSkip) {
+    return;
+  }
 
   /**
    * ----------------------------------------------------------
