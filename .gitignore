@@ -40,6 +40,3 @@ kafka/
 
 # postgres folder
 postgres/
-
-# dataset
-trainning_models/dataset/

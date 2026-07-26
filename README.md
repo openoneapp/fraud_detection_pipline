@@ -123,6 +123,12 @@ The platform processes banking transactions through a real-time streaming pipeli
 └────────┬────────┘
          │
          ▼
+┌──────────────────┐
+│     Core API     │
+│ Predection Fraud │
+└────────┬─────────┘
+         │
+         ▼
 ┌─────────────────┐
 │  Fraud Alerts   │
 │  & AI Analysis  │
@@ -137,6 +143,7 @@ The platform processes banking transactions through a real-time streaming pipeli
 | Service | URL | Purpose |
 | --- | --- | --- |
 | **AIBank Web UI** | `http://localhost:3000` | Banking simulator and frontend application |
+| **Core API** | `http://127.0.0.1:8000/docs` | Backend to manage training AI/ML model and request, response predections fraud |
 | **Kafka UI** | `http://localhost:8080` | Monitor Kafka clusters, topics, messages, and consumer activity |
 | **Debezium Connect** | `http://localhost:8083` | Capture PostgreSQL changes and publish them to Kafka |
 | **Apache Flink** | `http://localhost:8081` | Stateful real-time stream processing and fraud detection |

@@ -135,6 +135,23 @@ services:
         condition: service_healthy
     restart: on-failure
 
+  core-api:
+    build:
+      context: ./core-api
+      dockerfile: Dockerfile
+    container_name: core-api
+    ports:
+      - "8000:8000"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      KAFKA_FRAUD_PREDICTION_TOPIC: fraud-predictions
+      MODEL_PATH: app/models/fraud_model.pkl
+      LOG_LEVEL: INFO
+    depends_on:
+      kafka:
+        condition: service_started
+    restart: on-failure
+
   flink-jobmanager:
     image: flink:1.20.1-java17
     container_name: flink-jobmanager
