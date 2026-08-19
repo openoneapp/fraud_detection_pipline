@@ -15,11 +15,19 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ChartRingIcon, SentIcon, BankIcon, UserAccountIcon, TransactionHistoryIcon } from "@hugeicons/core-free-icons"
+import { ChartRingIcon, SentIcon, BankIcon, UserAccountIcon, TransactionHistoryIcon, Activity01Icon } from "@hugeicons/core-free-icons"
 import { createAuthClient } from "better-auth/react"
 
 const data = {
   navMain: [
+    {
+      title: "Monitoring",
+      url: "/dashboard",
+      icon: (
+        <HugeiconsIcon icon={Activity01Icon} strokeWidth={2} />
+      ),
+      isActive: true
+    },
     {
       title: "Accounts",
       url: "/accounts",

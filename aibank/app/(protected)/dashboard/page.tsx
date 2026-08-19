@@ -1,7 +1,5 @@
+import { MonitoringDashboard } from "@/components/monitoring-dashboard";
+
 export default function Page() {
-  return (
-    <div>
-      Dashboard
-    </div>
-  )
+  return <MonitoringDashboard />;
 }

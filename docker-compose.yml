@@ -169,9 +169,13 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres-aibank:5432/aibank?schema=public
       BETTER_AUTH_SECRET: 04a70603e27df6422e01aeccb1a2c5df865c759d20d242c86723636eb17e5fe0
       BETTER_AUTH_URL: http://localhost:3000
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      KAFKA_FRAUD_PREDICTION_TOPIC: fraud-predictions
     depends_on:
       postgres-aibank:
         condition: service_healthy
+      kafka:
+        condition: service_started
     restart: on-failure
 
   core-api:
