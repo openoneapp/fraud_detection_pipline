@@ -54,25 +54,64 @@ services:
       retries: 5
 
   kafka:
-    image: apache/kafka:latest
+    image: apache/kafka:4.3.1
     container_name: kafka
+    hostname: kafka
     ports:
       - "9092:9092"
     environment:
-      KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT
-
+      # =========================
+      # KRaft
+      # =========================
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
+
+      # =========================
+      # Listeners
+      # =========================
+      KAFKA_LISTENERS: CONTROLLER://0.0.0.0:9091,INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
+
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9093,EXTERNAL://localhost:9092
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+
+      # =========================
+      # Controller
+      # =========================
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9091
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9091
 
-      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
+      # =========================
+      # Broker
+      # =========================
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
 
+      # =========================
+      # Single broker
+      # =========================
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+      # =========================
+      # Development
+      # =========================
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
     volumes:
       - ./kafka/kafka-data:/var/lib/kafka/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
 
   kafka-ui:
     image: kafbat/kafka-ui:latest
@@ -146,6 +185,7 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       KAFKA_FRAUD_PREDICTION_TOPIC: fraud-predictions
       MODEL_PATH: app/models/fraud_model.pkl
+      FRAUD_TYPE_MODEL_PATH: app/models/fraud_type_model.pkl
       LOG_LEVEL: INFO
     depends_on:
       kafka:
@@ -180,3 +220,18 @@ services:
         taskmanager.numberOfTaskSlots: 4
     volumes:
       - ./flink/lib/flink-sql-connector-kafka-3.3.0-1.20.jar:/opt/flink/lib/flink-sql-connector-kafka-3.3.0-1.20.jar
+
+  flink-sql-runner:
+    image: flink:1.20.1-java17
+    container_name: flink-sql-runner
+    depends_on:
+        kafka:
+          condition: service_healthy
+        flink-jobmanager:
+          condition: service_started
+        flink-taskmanager:
+          condition: service_started
+    entrypoint: ["/bin/bash", "/opt/flink/sql/run-job.sh"]
+    volumes:
+      - ./flink/lib/flink-sql-connector-kafka-3.3.0-1.20.jar:/opt/flink/lib/flink-sql-connector-kafka-3.3.0-1.20.jar
+      - ./flink/sql:/opt/flink/sql

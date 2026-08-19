@@ -41,7 +41,9 @@ logging.basicConfig(
 
 model_loader = ModelLoader(
 
-    model_path=settings.model_path
+    model_path=settings.model_path,
+
+    fraud_type_model_path=settings.fraud_type_model_path
 )
 
 
@@ -73,6 +75,11 @@ async def lifespan(app: FastAPI):
     print(
         "Fraud AI model loaded successfully"
     )
+
+    if model_loader.fraud_type_model is None:
+        print(
+            "Fraud-type model not found; fraud_type will be null"
+        )
 
     yield
 

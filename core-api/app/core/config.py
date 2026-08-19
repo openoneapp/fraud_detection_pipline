@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     model_path: str = "app/models/fraud_model.pkl"
 
+    fraud_type_model_path: str = "app/models/fraud_type_model.pkl"
+
     log_level: str = "INFO"
 
     model_config = SettingsConfigDict(

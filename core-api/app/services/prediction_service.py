@@ -59,6 +59,14 @@ class PredictionService:
 
         is_fraud = prediction == 1
 
+        fraud_type = None
+        if is_fraud:
+            fraud_type_predictions = self.model_loader.predict_fraud_type(
+                features
+            )
+            if fraud_type_predictions is not None:
+                fraud_type = str(fraud_type_predictions[0])
+
         # 4. Build Kafka event
 
         kafka_prediction = {
@@ -77,6 +85,9 @@ class PredictionService:
 
             "fraud_probability":
                 fraud_probability,
+
+            "fraud_type":
+                fraud_type,
 
             "model_version":
                 self.MODEL_VERSION,
@@ -130,6 +141,8 @@ class PredictionService:
             is_fraud=is_fraud,
 
             fraud_probability=fraud_probability,
+
+            fraud_type=fraud_type,
 
             model_version=self.MODEL_VERSION,
 

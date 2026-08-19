@@ -163,12 +163,12 @@ cd AI-FINAL-PROJECT
 
 2. Build the Docker images and start all services in detached mode:
 ```bash
-docker compose up --build -d
+docker compose up --build
 
 ```
 
 
-> **Note:** The correct Docker Compose command is `docker compose up --build -d`.
+> **Note:** The correct Docker Compose command is `docker compose up --build`.
 
 
 3. Monitor the AIBank Application Logs:
@@ -235,24 +235,27 @@ You can create the connectors using cURL, Postman, Thunder Client, or any HTTP c
   "name": "aibank-transactions",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-    "database.hostname": "aibank",
+    "database.hostname": "postgres-aibank",
     "database.port": "5432",
     "database.user": "postgres",
     "database.password": "postgres",
     "database.dbname": "aibank",
     "topic.prefix": "aibank",
-    "table.include.list": "public.transactions",
     "plugin.name": "pgoutput",
     "slot.name": "aibank_transactions_slot",
     "publication.name": "aibank_transactions_publication",
     "decimal.handling.mode": "double",
-    "transforms": "unwrap",
-    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
-    "transforms.unwrap.add.fields": "op,table,source.ts_ms",
-    "transforms.unwrap.delete.handling.mode": "rewrite"
+    "publication.autocreate.mode": "filtered",
+    "table.include.list": "public.transactions",
+    "snapshot.mode": "initial",
+    "include.schema.changes": "false",
+    "tombstones.on.delete": "false",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false"
   }
 }
-
 ```
 
 
@@ -267,24 +270,27 @@ You can create the connectors using cURL, Postman, Thunder Client, or any HTTP c
   "name": "aibank-bank-accounts",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-    "database.hostname": "aibank",
+    "database.hostname": "postgres-aibank",
     "database.port": "5432",
     "database.user": "postgres",
     "database.password": "postgres",
     "database.dbname": "aibank",
     "topic.prefix": "aibank",
-    "table.include.list": "public.bank_accounts",
     "plugin.name": "pgoutput",
     "slot.name": "aibank_bank_accounts_slot",
     "publication.name": "aibank_bank_accounts_publication",
     "decimal.handling.mode": "double",
-    "transforms": "unwrap",
-    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
-    "transforms.unwrap.add.fields": "op,table,source.ts_ms",
-    "transforms.unwrap.delete.handling.mode": "rewrite"
+    "publication.autocreate.mode": "filtered",
+    "table.include.list": "public.bank_accounts",
+    "snapshot.mode": "initial",
+    "include.schema.changes": "false",
+    "tombstones.on.delete": "false",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false"
   }
 }
-
 ```
 
 

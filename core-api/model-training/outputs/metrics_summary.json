@@ -1,0 +1,14 @@
+{
+  "logistic_regression": {
+    "roc_auc": 0.9965792139579955,
+    "pr_auc": 0.9943607751510485
+  },
+  "random_forest": {
+    "roc_auc": 0.9983285588436273,
+    "pr_auc": 0.9970779524273788
+  },
+  "hist_gradient_boosting": {
+    "roc_auc": 0.9985574864346207,
+    "pr_auc": 0.9974903695353969
+  }
+}

@@ -1,15 +1,19 @@
+from datetime import datetime, timezone
 from decimal import Decimal
+from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 
 class FraudPredictionRequest(BaseModel):
 
-    transaction_id: str
+    transaction_id: str = Field(
+        default_factory=lambda: str(uuid4())
+    )
 
-    sender_account_id: str
+    sender_account_id: str = "unknown"
 
-    receiver_account_id: str
+    receiver_account_id: str = "unknown"
 
     trans_amount: Decimal = Field(
         ...,
@@ -56,4 +60,6 @@ class FraudPredictionRequest(BaseModel):
         ge=0
     )
 
-    event_time: str
+    event_time: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
