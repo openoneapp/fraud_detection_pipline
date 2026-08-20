@@ -455,6 +455,65 @@ Fraud Alert / Action
 
 ---
 
+### 🚀 Direct Testing Model Via Core API
+
+* **Request:** `POST http://127.0.0.1:8000/api/v1/predictions`
+* **Headers:** `Content-Type: application/json`
+* **Request Body:**
+
+#### "fraud_type": "IMMEDIATE_LARGE_TRANSFER"
+```json
+{
+  "transaction_id": "0f462714-5660-4e5d-b21e-c972f8ef7277",
+  "sender_account_id": "0f462714-c972f8ef7277",
+  "receiver_account_id": "c972f8ef7277-0f462714",
+  "trans_amount": 1250000.00,
+  "age_hours_open_acc": 2,
+  "receiver_txn_count_last_3d": 0,
+  "unique_senders_last_3d": 78,
+  "multi_same_amt_count_2d": 0,
+  "sender_txn_count_last_1h": 1,
+  "sender_volume_last_1h": 1250000.00,
+  "days_since_last_trans": 9999,
+  "geo_speed_kmh": 0,
+  "event_time": "string"
+}
+```
+#### "fraud_type": "LOCATION_JUMP"
+```json
+{
+    "transaction_id": "0f462714-5660-4e5d-b21e-c972f8ef7277",
+    "sender_account_id": "0f462714-c972f8ef7277",
+    "receiver_account_id": "c972f8ef7277-0f462714",
+    "trans_amount": 50000.00,
+    "age_hours_open_acc": 12,
+    "receiver_txn_count_last_3d": 1,
+    "unique_senders_last_3d": 50,
+    "multi_same_amt_count_2d": 0,
+    "sender_txn_count_last_1h": 8,
+    "sender_volume_last_1h": 400000.00,
+    "days_since_last_trans": 9999,
+    "geo_speed_kmh": 900
+}
+```
+#### Normal Transactions
+```json
+{
+    "transaction_id": "0f462714-5660-4e5d-b21e-c972f8ef7277",
+    "sender_account_id": "0f462714-c972f8ef7277",
+    "receiver_account_id": "c972f8ef7277-0f462714",
+    "trans_amount": 850.00,
+    "age_hours_open_acc": 240,
+    "receiver_txn_count_last_3d": 12,
+    "unique_senders_last_3d": 4,
+    "multi_same_amt_count_2d": 1,
+    "sender_txn_count_last_1h": 4,
+    "sender_volume_last_1h": 2400.00,
+    "days_since_last_trans": 1,
+    "geo_speed_kmh": 25
+}
+```
+
 ## 🎯 Project Objective
 
 The objective of this project is to demonstrate how modern financial institutions can combine **full-stack application development**, **PostgreSQL databases**, **Change Data Capture**, **Apache Kafka**, **Apache Flink**, **Feature Engineering**, and **Machine Learning / Artificial Intelligence** with **real-time stream processing** to build an end-to-end real-time banking fraud detection platform.
