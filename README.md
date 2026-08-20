@@ -1,3 +1,10 @@
+# 📘 Group 1
+Members
+* **Mr.Sat Rotana**
+* **Mr.Khun Kimsal**
+* **Mr.Pov Sokny**
+
+
 # 🛡️ Real-Time Fraud Detection System
 
 A high-performance, real-time banking fraud detection platform built as a comprehensive final capstone project.
